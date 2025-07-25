@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktivasi Akun - Koin Poin</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        .coin-gradient {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-coins text-yellow-500 text-2xl"></i>
+                <h1 class="text-xl font-bold text-gray-800">Koin Poin</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto">
+            <div class="text-center mb-8 fade-in">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Aktivasi Akun</h2>
+                <p class="text-gray-600">Masukkan kode aktivasi yang dikirim via WhatsApp</p>
+            </div>
+
+            <!-- Activation Form -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6 fade-in">
+                <form id="activationForm">
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2" for="kode">
+                            <i class="fas fa-key mr-2 text-blue-500"></i>
+                            Kode Aktivasi
+                        </label>
+                        <input 
+                            type="text" 
+                            id="kode" 
+                            name="kode" 
+                            placeholder="Masukkan 8 digit kode" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-center text-lg tracking-widest font-mono"
+                            maxlength="8"
+                            required
+                        >
+                        <p class="text-xs text-gray-500 mt-2">Kode dikirim ke nomor WhatsApp Anda</p>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 pulse-animation flex items-center justify-center"
+                    >
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Aktivasi Sekarang
+                    </button>
+                </form>
+            </div>
+
+            <!-- Resend Code -->
+            <div class="text-center fade-in">
+                <p class="text-gray-600 text-sm">
+                    Tidak menerima kode? 
+                    <button id="resendCode" class="text-blue-600 hover:text-blue-800 font-medium">
+                        Kirim Ulang Kode
+                    </button>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-400 text-sm">© 2025 Koin Poin. Semua konten dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Cek apakah user sudah login
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Cek parameter kode dari URL (jika admin kirim link langsung)
+        const urlParams = new URLSearchParams(window.location.search);
+        const kodeFromUrl = urlParams.get('kode');
+        if (kodeFromUrl) {
+            document.getElementById('kode').value = kodeFromUrl;
+        }
+
+        document.getElementById('activationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const kode = document.getElementById('kode').value;
+            
+            if (kode.length !== 8) {
+                alert('Kode aktivasi harus 8 digit');
+                return;
+            }
+
+            // Simulasi verifikasi kode
+            // Di production, ini akan mengirim ke server untuk verifikasi
+            const validCodes = ['KP2025A1', 'KP2025B2', 'KP2025C3', 'KP2025D4'];
+            
+            if (validCodes.includes(kode.toUpperCase())) {
+                // Kode valid, simpan session login
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userId', 'U1248');
+                localStorage.setItem('userName', 'Ahmad Santoso');
+                localStorage.setItem('userEmail', 'ahmad@email.com');
+                localStorage.setItem('userWhatsapp', '081234567890');
+                localStorage.setItem('userKoin', '1250');
+                
+                alert('Akun berhasil diaktivasi! Anda akan dialihkan ke dashboard.');
+                
+                // Redirect ke dashboard setelah aktivasi
+                setTimeout(function() {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+            } else {
+                alert('Kode aktivasi tidak valid. Silakan coba lagi.');
+            }
+        });
+
+        document.getElementById('resendCode').addEventListener('click', function() {
+            alert('Kode aktivasi baru akan dikirim via WhatsApp dalam beberapa menit.');
+        });
+    </script>
+</body>
+</html>
