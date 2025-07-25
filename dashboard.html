@@ -11,8 +11,15 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
         .fade-in {
             animation: fadeIn 0.6s ease-out;
+        }
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
         }
         .card-hover:hover {
             transform: translateY(-5px);
@@ -20,6 +27,16 @@
         }
         .coin-gradient {
             background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
         }
     </style>
 </head>
@@ -35,11 +52,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-2 bg-yellow-50 px-3 py-2 rounded-lg">
                         <i class="fas fa-coins text-yellow-500"></i>
-                        <span id="userKoin" class="font-semibold text-yellow-700">0 Koin</span>
-                    </div>
-                    <div class="flex items-center space-x-2 bg-blue-50 px-3 py-2 rounded-lg">
-                        <i class="fas fa-user text-blue-500"></i>
-                        <span id="userName" class="font-semibold text-blue-700">User</span>
+                        <span id="userKoinDisplay" class="font-semibold text-yellow-700">0 Koin</span>
                     </div>
                     <button onclick="logout()" class="text-gray-600 hover:text-red-600 transition-colors">
                         <i class="fas fa-sign-out-alt"></i>
@@ -53,93 +66,87 @@
     <main class="container mx-auto px-4 py-8">
         <!-- User Info Card -->
         <div class="bg-white rounded-xl shadow-md p-6 mb-8 fade-in">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Selamat Datang, <span id="welcomeName">User</span>!</h2>
-                    <p class="text-gray-600">ID: <span id="userId" class="font-mono bg-gray-100 px-2 py-1 rounded">U0000</span></p>
-                    <p class="text-gray-600">Email: <span id="userEmail">-</span></p>
-                    <p class="text-gray-600">WhatsApp: <span id="userWhatsapp">-</span></p>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Halo, <span id="userNameDisplay">User</span>!</h2>
+                    <p class="text-gray-600">ID: <span id="userIdDisplay" class="font-mono bg-gray-100 px-2 py-1 rounded">U0000</span></p>
+                    <p class="text-gray-600 mt-1">Email: <span id="userEmailDisplay">-</span></p>
                 </div>
-                <div class="text-right">
+                <div class="mt-4 md:mt-0 text-right">
                     <p class="text-sm text-gray-500">Saldo Koin</p>
-                    <p id="saldoKoin" class="text-3xl font-bold coin-gradient bg-clip-text text-transparent">0</p>
+                    <p id="saldoKoinDisplay" class="text-3xl font-bold coin-gradient bg-clip-text text-transparent">0</p>
                 </div>
             </div>
         </div>
 
-        <!-- Menu Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Pulsa -->
-            <a href="pulsa.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-mobile-alt text-blue-500 text-2xl"></i>
-                </div>
-                <h3 class="font-semibold text-gray-800">Pulsa</h3>
-                <p class="text-sm text-gray-600 mt-1">Isi pulsa HP</p>
-            </a>
+        <!-- Services Menu -->
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-6 fade-in">Layanan Kami</h3>
+            <div class="menu-grid">
+                <!-- Pulsa -->
+                <a href="pulsa.html" class="bg-white rounded-xl shadow-md p-5 text-center card-hover transition-all duration-300 fade-in">
+                    <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-mobile-alt text-blue-500 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 text-sm">Pulsa</h4>
+                </a>
 
-            <!-- E-Wallet -->
-            <a href="ewallet.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.1s">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-wallet text-green-500 text-2xl"></i>
-                </div>
-                <h3 class="font-semibold text-gray-800">E-Wallet</h3>
-                <p class="text-sm text-gray-600 mt-1">Isi saldo digital</p>
-            </a>
+                <!-- E-Wallet -->
+                <a href="ewallet.html" class="bg-white rounded-xl shadow-md p-5 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.1s">
+                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-wallet text-green-500 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 text-sm">E-Wallet</h4>
+                </a>
 
-            <!-- Transfer -->
-            <a href="transfer.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.2s">
-                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-exchange-alt text-purple-500 text-2xl"></i>
-                </div>
-                <h3 class="font-semibold text-gray-800">Transfer</h3>
-                <p class="text-sm text-gray-600 mt-1">Kirim ke sesama</p>
-            </a>
+                <!-- Transfer -->
+                <a href="transfer.html" class="bg-white rounded-xl shadow-md p-5 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.2s">
+                    <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-exchange-alt text-purple-500 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 text-sm">Transfer</h4>
+                </a>
 
-            <!-- Kirim Saldo -->
-            <a href="transfer-bank.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.3s">
-                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-university text-yellow-500 text-2xl"></i>
-                </div>
-                <h3 class="font-semibold text-gray-800">Kirim Saldo</h3>
-                <p class="text-sm text-gray-600 mt-1">Transfer ke bank</p>
-            </a>
+                <!-- Kirim Saldo -->
+                <a href="transfer-bank.html" class="bg-white rounded-xl shadow-md p-5 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.3s">
+                    <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-university text-yellow-500 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 text-sm">Kirim Saldo</h4>
+                </a>
 
-            <!-- Topup Saldo -->
-            <a href="topup-poinkoin.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.4s">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-plus-circle text-red-500 text-2xl"></i>
-                </div>
-                <h3 class="font-semibold text-gray-800">Topup Saldo</h3>
-                <p class="text-sm text-gray-600 mt-1">Tambah poin koin</p>
-            </a>
+                <!-- Topup Saldo -->
+                <a href="topup-poinkoin.html" class="bg-white rounded-xl shadow-md p-5 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.4s">
+                    <div class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-plus-circle text-red-500 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 text-sm">Topup Saldo</h4>
+                </a>
 
-            <!-- Token PLN -->
-            <a href="token-pln.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.5s">
-                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-bolt text-orange-500 text-2xl"></i>
-                </div>
-                <h3 class="font-semibold text-gray-800">Token PLN</h3>
-                <p class="text-sm text-gray-600 mt-1">Beli token listrik</p>
-            </a>
+                <!-- Token PLN -->
+                <a href="token-pln.html" class="bg-white rounded-xl shadow-md p-5 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.5s">
+                    <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-bolt text-orange-500 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 text-sm">Token PLN</h4>
+                </a>
 
-            <!-- Riwayat -->
-            <a href="#" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.6s">
-                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-history text-indigo-500 text-2xl"></i>
-                </div>
-                <h3 class="font-semibold text-gray-800">Riwayat</h3>
-                <p class="text-sm text-gray-600 mt-1">Transaksi Anda</p>
-            </a>
+                <!-- Riwayat -->
+                <a href="#" class="bg-white rounded-xl shadow-md p-5 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.6s">
+                    <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-history text-indigo-500 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 text-sm">Riwayat</h4>
+                </a>
 
-            <!-- Pengaturan -->
-            <a href="#" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.7s">
-                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-cog text-gray-500 text-2xl"></i>
-                </div>
-                <h3 class="font-semibold text-gray-800">Pengaturan</h3>
-                <p class="text-sm text-gray-600 mt-1">Kelola akun</p>
-            </a>
+                <!-- Pengaturan -->
+                <a href="#" class="bg-white rounded-xl shadow-md p-5 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.7s">
+                    <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-cog text-gray-500 text-xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 text-sm">Pengaturan</h4>
+                </a>
+            </div>
         </div>
 
         <!-- Quick Stats -->
@@ -218,21 +225,19 @@
             window.location.href = 'index.html';
         }
 
-        // Load user data
+        // Load user data from localStorage
         function loadUserData() {
             const userId = localStorage.getItem('userId') || 'U0000';
             const userName = localStorage.getItem('userName') || 'User';
             const userEmail = localStorage.getItem('userEmail') || '-';
-            const userWhatsapp = localStorage.getItem('userWhatsapp') || '-';
             const userKoin = localStorage.getItem('userKoin') || '0';
             
-            document.getElementById('userId').textContent = userId;
-            document.getElementById('welcomeName').textContent = userName;
-            document.getElementById('userName').textContent = userName;
-            document.getElementById('userEmail').textContent = userEmail;
-            document.getElementById('userWhatsapp').textContent = userWhatsapp;
-            document.getElementById('userKoin').textContent = userKoin + ' Koin';
-            document.getElementById('saldoKoin').textContent = userKoin;
+            // Update display elements
+            document.getElementById('userIdDisplay').textContent = userId;
+            document.getElementById('userNameDisplay').textContent = userName;
+            document.getElementById('userEmailDisplay').textContent = userEmail;
+            document.getElementById('userKoinDisplay').textContent = userKoin + ' Koin';
+            document.getElementById('saldoKoinDisplay').textContent = userKoin;
         }
 
         // Logout function
@@ -252,11 +257,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadUserData();
             
-            const elements = document.querySelectorAll('.fade-in');
+            const elements = document.querySelectorAll('.fade-in, .slide-in');
             elements.forEach((el, index) => {
                 el.style.animationDelay = `${index * 0.1}s`;
             });
         });
     </script>
 </body>
-  </html>
+</html>
