@@ -777,7 +777,7 @@
             }
         }
 
-        // Generate activation link
+        // Generate activation link - PERBAIKAN YANG PENTING
         function generateActivationLink() {
             const userId = document.getElementById('userIdForLink').value;
             if (!userId) {
@@ -785,21 +785,35 @@
                 return;
             }
             
-            // Generate kode unik (di production pakai database)
-            const kodeUnik = 'KP' + new Date().getFullYear() + 
-                             String.fromCharCode(65 + Math.floor(Math.random() * 26)) + 
-                             Math.floor(1000 + Math.random() * 9000);
+            // Generate kode unik dengan format yang benar
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const nums = '0123456789';
+            let kodeUnik = 'KP' + new Date().getFullYear();
             
-            // Buat link aktivasi (sesuaikan dengan domain Anda)
-            const baseUrl = window.location.origin.replace('admin.html', '');
+            // Tambahkan 1 huruf acak
+            kodeUnik += chars.charAt(Math.floor(Math.random() * chars.length));
+            
+            // Tambahkan 4 angka acak
+            for (let i = 0; i < 4; i++) {
+                kodeUnik += nums.charAt(Math.floor(Math.random() * nums.length));
+            }
+            
+            // Buat link yang benar dengan tanda / yang tepat
+            const baseUrl = 'https://bankragilgunawan.github.io/';
             const activationLink = `${baseUrl}aktivasi.html?kode=${kodeUnik}&user=${userId}`;
             
             document.getElementById('activationLink').value = activationLink;
+            console.log('Generated link:', activationLink);
         }
 
         // Copy link to clipboard
         function copyLink() {
             const linkInput = document.getElementById('activationLink');
+            if (!linkInput.value) {
+                alert('Silakan generate link terlebih dahulu');
+                return;
+            }
+            
             linkInput.select();
             document.execCommand('copy');
             alert('Link telah disalin ke clipboard!');
@@ -840,4 +854,4 @@
         }, 5000);
     </script>
 </body>
-  </html>
+</html>
