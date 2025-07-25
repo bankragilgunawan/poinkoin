@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Koin Poin</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .coin-gradient {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-coins text-yellow-500 text-2xl"></i>
+                    <h1 class="text-xl font-bold text-gray-800">Koin Poin</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 bg-yellow-50 px-3 py-2 rounded-lg">
+                        <i class="fas fa-coins text-yellow-500"></i>
+                        <span id="userKoin" class="font-semibold text-yellow-700">0 Koin</span>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-blue-50 px-3 py-2 rounded-lg">
+                        <i class="fas fa-user text-blue-500"></i>
+                        <span id="userName" class="font-semibold text-blue-700">User</span>
+                    </div>
+                    <button onclick="logout()" class="text-gray-600 hover:text-red-600 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- User Info Card -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 fade-in">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Selamat Datang, <span id="welcomeName">User</span>!</h2>
+                    <p class="text-gray-600">ID: <span id="userId" class="font-mono bg-gray-100 px-2 py-1 rounded">U0000</span></p>
+                    <p class="text-gray-600">Email: <span id="userEmail">-</span></p>
+                    <p class="text-gray-600">WhatsApp: <span id="userWhatsapp">-</span></p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-500">Saldo Koin</p>
+                    <p id="saldoKoin" class="text-3xl font-bold coin-gradient bg-clip-text text-transparent">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Pulsa -->
+            <a href="pulsa.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-mobile-alt text-blue-500 text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Pulsa</h3>
+                <p class="text-sm text-gray-600 mt-1">Isi pulsa HP</p>
+            </a>
+
+            <!-- E-Wallet -->
+            <a href="ewallet.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.1s">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-wallet text-green-500 text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">E-Wallet</h3>
+                <p class="text-sm text-gray-600 mt-1">Isi saldo digital</p>
+            </a>
+
+            <!-- Transfer -->
+            <a href="transfer.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.2s">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exchange-alt text-purple-500 text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Transfer</h3>
+                <p class="text-sm text-gray-600 mt-1">Kirim ke sesama</p>
+            </a>
+
+            <!-- Kirim Saldo -->
+            <a href="transfer-bank.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.3s">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-university text-yellow-500 text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Kirim Saldo</h3>
+                <p class="text-sm text-gray-600 mt-1">Transfer ke bank</p>
+            </a>
+
+            <!-- Topup Saldo -->
+            <a href="topup-poinkoin.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.4s">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-plus-circle text-red-500 text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Topup Saldo</h3>
+                <p class="text-sm text-gray-600 mt-1">Tambah poin koin</p>
+            </a>
+
+            <!-- Token PLN -->
+            <a href="token-pln.html" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.5s">
+                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-bolt text-orange-500 text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Token PLN</h3>
+                <p class="text-sm text-gray-600 mt-1">Beli token listrik</p>
+            </a>
+
+            <!-- Riwayat -->
+            <a href="#" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.6s">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-history text-indigo-500 text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Riwayat</h3>
+                <p class="text-sm text-gray-600 mt-1">Transaksi Anda</p>
+            </a>
+
+            <!-- Pengaturan -->
+            <a href="#" class="bg-white rounded-xl shadow-md p-6 text-center card-hover transition-all duration-300 fade-in" style="animation-delay: 0.7s">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-cog text-gray-500 text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Pengaturan</h3>
+                <p class="text-sm text-gray-600 mt-1">Kelola akun</p>
+            </a>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="bg-white rounded-xl shadow-md p-6 fade-in" style="animation-delay: 0.8s">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Statistik Minggu Ini</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-blue-50 rounded-lg p-4 text-center">
+                    <p class="text-2xl font-bold text-blue-600">12</p>
+                    <p class="text-sm text-gray-600">Transaksi</p>
+                </div>
+                <div class="bg-green-50 rounded-lg p-4 text-center">
+                    <p class="text-2xl font-bold text-green-600">1,250</p>
+                    <p class="text-sm text-gray-600">Total Poin</p>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-4 text-center">
+                    <p class="text-2xl font-bold text-purple-600">Rp 125.000</p>
+                    <p class="text-sm text-gray-600">Nilai Tukar</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Links -->
+    <div class="bg-white border-t py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-4">Tentang Kami</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Profil Perusahaan</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Karir</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-4">Kebijakan</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Kebijakan Privasi</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Syarat & Ketentuan</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-4">Bantuan</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Pusat Bantuan</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Kontak Kami</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-4">Ikuti Kami</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-600 hover:text-blue-400 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-600 hover:text-pink-600 transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-400 text-sm">© 2025 Koin Poin. Semua konten dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Cek apakah user sudah login
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'index.html';
+        }
+
+        // Load user data
+        function loadUserData() {
+            const userId = localStorage.getItem('userId') || 'U0000';
+            const userName = localStorage.getItem('userName') || 'User';
+            const userEmail = localStorage.getItem('userEmail') || '-';
+            const userWhatsapp = localStorage.getItem('userWhatsapp') || '-';
+            const userKoin = localStorage.getItem('userKoin') || '0';
+            
+            document.getElementById('userId').textContent = userId;
+            document.getElementById('welcomeName').textContent = userName;
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userEmail').textContent = userEmail;
+            document.getElementById('userWhatsapp').textContent = userWhatsapp;
+            document.getElementById('userKoin').textContent = userKoin + ' Koin';
+            document.getElementById('saldoKoin').textContent = userKoin;
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userWhatsapp');
+                localStorage.removeItem('userKoin');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Load user data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+  </html>
