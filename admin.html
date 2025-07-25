@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Koin Poin</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .sidebar {
+            transition: all 0.3s ease;
+            transform: translateX(-100%);
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .content-transition {
+            transition: all 0.3s ease;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        /* Scrollbar styling */
+        .table-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #c5c5c5;
+            border-radius: 3px;
+        }
+        .menu-item {
+            transition: all 0.2s ease;
+        }
+        .menu-item:hover {
+            transform: translateX(5px);
+        }
+        /* Full width but contained */
+        .content-contained {
+            width: 100%;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .content-contained.max-w-screen-xl {
+            max-width: 1280px;
+        }
+        .user-detail {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <button id="menu-toggle" class="focus:outline-none">
+                        <i class="fas fa-crown text-yellow-500 text-2xl"></i>
+                    </button>
+                    <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 bg-blue-50 px-3 py-2 rounded-lg">
+                        <i class="fas fa-user-shield text-blue-500"></i>
+                        <span class="font-semibold text-blue-700">Admin</span>
+                    </div>
+                    <button onclick="window.location.href='index.html'" class="flex items-center space-x-1 text-gray-600 hover:text-gray-900 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="text-sm">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed left-0 top-16 h-full bg-white shadow-md w-64 z-40">
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <button onclick="showSection('dashboard')" class="menu-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-50 text-blue-600 font-medium">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showSection('users')" class="menu-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-users"></i>
+                            <span>Daftar User</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showSection('transactions')" class="menu-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Transaksi</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showSection('manage-users')" class="menu-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Kelola User</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showSection('reports')" class="menu-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Laporan</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Overlay for mobile -->
+        <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden" onclick="toggleMenu()"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-0">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-transition content-contained max-w-screen-xl py-6">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Dashboard</h2>
+                    <p class="text-gray-600 text-sm">Ringkasan aktivitas sistem</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card text-white rounded-xl p-6 shadow-lg slide-in" style="animation-delay: 0.1s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm opacity-80">Total User</p>
+                                <p class="text-2xl font-bold">1,248</p>
+                            </div>
+                            <i class="fas fa-users text-3xl opacity-80"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-400 to-green-600 text-white rounded-xl p-6 shadow-lg slide-in" style="animation-delay: 0.2s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm opacity-80">Total Transaksi</p>
+                                <p class="text-2xl font-bold">3,452</p>
+                            </div>
+                            <i class="fas fa-exchange-alt text-3xl opacity-80"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-xl p-6 shadow-lg slide-in" style="animation-delay: 0.3s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm opacity-80">Total Poin</p>
+                                <p class="text-2xl font-bold">2,456,789</p>
+                            </div>
+                            <i class="fas fa-coins text-3xl opacity-80"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl p-6 shadow-lg slide-in" style="animation-delay: 0.4s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm opacity-80">Pendapatan</p>
+                                <p class="text-2xl font-bold">Rp 245M</p>
+                            </div>
+                            <i class="fas fa-money-bill-wave text-3xl opacity-80"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-8 slide-in" style="animation-delay: 0.5s">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Aktivitas Terbaru</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-plus text-blue-500"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">User baru terdaftar</p>
+                                <p class="text-sm text-gray-600">ID: U1248 - 2 menit yang lalu</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-coins text-green-500"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">Top up berhasil</p>
+                                <p class="text-sm text-gray-600">User: U1201 - 15 menit yang lalu</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-mobile-alt text-purple-500"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">Pulsa terkirim</p>
+                                <p class="text-sm text-gray-600">User: U1156 - 23 menit yang lalu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users-section" class="content-transition content-contained max-w-screen-xl py-6 hidden">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Daftar User</h2>
+                    <p class="text-gray-600 text-sm">Kelola semua pengguna sistem</p>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                placeholder="Cari user..." 
+                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <div class="flex space-x-2">
+                            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option>Semua Status</option>
+                                <option>Aktif</option>
+                                <option>Tidak Aktif</option>
+                            </select>
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-filter mr-2"></i>Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="table-container">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">WhatsApp</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Koin</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="showUserDetail('user1')">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">U1248</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Ahmad Santoso</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">ahmad@email.com</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">081234567890</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1,250 Koin</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Pending
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3" onclick="event.stopPropagation(); showUserDetail('user1')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="showUserDetail('user2')">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">U1201</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Budi Prasetyo</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">budi@email.com</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">081234567891</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2,450 Koin</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Aktif
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3" onclick="event.stopPropagation(); showUserDetail('user2')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="showUserDetail('user3')">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">U1156</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Citra Dewi</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">citra@email.com</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">081234567892</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">890 Koin</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Aktif
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3" onclick="event.stopPropagation(); showUserDetail('user3')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- User Detail Section -->
+                <div id="user-detail-section" class="user-detail bg-white rounded-xl shadow-md p-6 mt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Detail User</h3>
+                        <button onclick="hideUserDetail()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">ID User</label>
+                                <input type="text" id="detail-id" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                <input type="text" id="detail-nama" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="detail-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp</label>
+                                <input type="text" id="detail-whatsapp" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Saldo Koin</label>
+                                <input type="number" id="detail-koin" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select id="detail-status" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <option value="pending">Pending</option>
+                                    <option value="aktif">Aktif</option>
+                                    <option value="tidak_aktif">Tidak Aktif</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3 mt-6">
+                        <button onclick="saveUserChanges()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                            <i class="fas fa-save mr-2"></i>Simpan Perubahan
+                        </button>
+                        <button onclick="deleteUser()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                            <i class="fas fa-trash mr-2"></i>Hapus User
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transactions Section -->
+            <section id="transactions-section" class="content-transition content-contained max-w-screen-xl py-6 hidden">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Transaksi</h2>
+                    <p class="text-gray-600 text-sm">Riwayat semua transaksi sistem</p>
+                </div>
+
+                <!-- Manual Transaction Form -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Input Transaksi Manual</h3>
+                    <form class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ID User</label>
+                            <input type="text" placeholder="Masukkan ID User" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Transaksi</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option>Top Up</option>
+                                <option>Pulsa</option>
+                                <option>E-Wallet</option>
+                                <option>Transfer</option>
+                                <option>Token PLN</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nominal (Koin)</label>
+                            <input type="number" placeholder="Masukkan jumlah koin" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Tambah
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Filter Options -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ID User</label>
+                            <input type="text" placeholder="Masukkan ID User" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Transaksi</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option>Semua</option>
+                                <option>Top Up</option>
+                                <option>Pulsa</option>
+                                <option>E-Wallet</option>
+                                <option>Transfer</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                            <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-search mr-2"></i>Cari
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Table -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="table-container">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Transaksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#TRX-2023001</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">U1248</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Top Up</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1,000 Koin</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-10-15 14:30</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Berhasil
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#TRX-2023002</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">U1201</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Pulsa</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">50.000 Koin</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-10-15 13:45</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Berhasil
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#TRX-2023003</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">U1156</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">E-Wallet</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">200.000 Koin</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-10-15 12:15</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Pending
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Manage Users Section -->
+            <section id="manage-users-section" class="content-transition content-contained max-w-screen-xl py-6 hidden">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Kelola User</h2>
+                    <p class="text-gray-600 text-sm">Tambah, edit, atau hapus pengguna</p>
+                </div>
+
+                <!-- Generate Activation Link -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Buat Link Aktivasi untuk User Baru</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ID User</label>
+                            <input type="text" id="userIdForLink" placeholder="Masukkan ID User" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Generate Kode</label>
+                            <button type="button" onclick="generateActivationLink()" class="w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                <i class="fas fa-link mr-2"></i>Generate Link
+                            </button>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Link Aktivasi</label>
+                            <div class="flex">
+                                <input type="text" id="activationLink" readonly placeholder="Link akan muncul di sini" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-100 text-sm">
+                                <button type="button" onclick="copyLink()" class="bg-blue-500 text-white px-3 py-2 rounded-r-lg hover:bg-blue-600 transition-colors">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Kirim link aktivasi ini ke user via WhatsApp setelah verifikasi pendaftaran.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Add User Form -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Tambah User Baru</h3>
+                    <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ID User (Otomatis)</label>
+                            <input type="text" value="U1249" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp</label>
+                            <input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Saldo Awal (Koin)</label>
+                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div class="md:col-span-2">
+                            <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Tambah User
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Manage Balance -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Ubah Saldo User</h3>
+                    <form class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ID User</label>
+                            <input type="text" placeholder="Masukkan ID User" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Transaksi</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option>Tambah Saldo</option>
+                                <option>Kurangi Saldo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Koin</label>
+                            <input type="number" placeholder="Masukkan jumlah koin" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div class="md:col-span-3">
+                            <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                <i class="fas fa-sync-alt mr-2"></i>Ubah Saldo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports-section" class="content-transition content-contained max-w-screen-xl py-6 hidden">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-1">Laporan</h2>
+                    <p class="text-gray-600 text-sm">Statistik dan laporan sistem</p>
+                </div>
+
+                <!-- Report Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-800">Transaksi Hari Ini</h3>
+                            <i class="fas fa-chart-bar text-blue-500 text-xl"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-800">142</p>
+                        <p class="text-sm text-gray-600 mt-1">+12% dari kemarin</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-800">Pendapatan Bulan Ini</h3>
+                            <i class="fas fa-money-bill-wave text-green-500 text-xl"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-800">Rp 45M</p>
+                        <p class="text-sm text-gray-600 mt-1">+8% dari bulan lalu</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-800">User Aktif</h3>
+                            <i class="fas fa-users text-purple-500 text-xl"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-800">1,248</p>
+                        <p class="text-sm text-gray-600 mt-1">+5% dari bulan lalu</p>
+                    </div>
+                </div>
+
+                <!-- Chart Placeholder -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Grafik Transaksi Bulanan</h3>
+                    <div class="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-chart-line text-gray-400 text-4xl mb-3"></i>
+                            <p class="text-gray-500">Grafik akan ditampilkan di sini</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Options -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Ekspor Laporan</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center">
+                            <i class="fas fa-file-excel mr-2"></i>Excel
+                        </button>
+                        <button class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center">
+                            <i class="fas fa-file-pdf mr-2"></i>PDF
+                        </button>
+                        <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center">
+                            <i class="fas fa-file-csv mr-2"></i>CSV
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-400 text-sm">© 2023 Koin Poin Admin Panel. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle menu function
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Show section function
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(`${sectionName}-section`).classList.remove('hidden');
+            
+            // Update active menu
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-blue-50', 'text-blue-600');
+                btn.classList.add('text-gray-700', 'hover:bg-gray-100');
+            });
+            
+            // Add active class to clicked button
+            event.target.closest('button').classList.add('bg-blue-50', 'text-blue-600');
+            event.target.closest('button').classList.remove('text-gray-700', 'hover:bg-gray-100');
+            
+            // Close menu on mobile after selection
+            if (window.innerWidth < 768) {
+                toggleMenu();
+            }
+        }
+
+        // Show user detail
+        function showUserDetail(userId) {
+            // Hide all user details first
+            document.querySelectorAll('.user-detail').forEach(detail => {
+                detail.style.display = 'none';
+            });
+            
+            // Show user detail section
+            document.getElementById('user-detail-section').style.display = 'block';
+            
+            // Set dummy data based on user ID
+            if (userId === 'user1') {
+                document.getElementById('detail-id').value = 'U1248';
+                document.getElementById('detail-nama').value = 'Ahmad Santoso';
+                document.getElementById('detail-email').value = 'ahmad@email.com';
+                document.getElementById('detail-whatsapp').value = '081234567890';
+                document.getElementById('detail-koin').value = '1250';
+                document.getElementById('detail-status').value = 'pending';
+                // Set user ID for link generation
+                document.getElementById('userIdForLink').value = 'U1248';
+            } else if (userId === 'user2') {
+                document.getElementById('detail-id').value = 'U1201';
+                document.getElementById('detail-nama').value = 'Budi Prasetyo';
+                document.getElementById('detail-email').value = 'budi@email.com';
+                document.getElementById('detail-whatsapp').value = '081234567891';
+                document.getElementById('detail-koin').value = '2450';
+                document.getElementById('detail-status').value = 'aktif';
+                document.getElementById('userIdForLink').value = 'U1201';
+            } else if (userId === 'user3') {
+                document.getElementById('detail-id').value = 'U1156';
+                document.getElementById('detail-nama').value = 'Citra Dewi';
+                document.getElementById('detail-email').value = 'citra@email.com';
+                document.getElementById('detail-whatsapp').value = '081234567892';
+                document.getElementById('detail-koin').value = '890';
+                document.getElementById('detail-status').value = 'aktif';
+                document.getElementById('userIdForLink').value = 'U1156';
+            }
+        }
+
+        // Hide user detail
+        function hideUserDetail() {
+            document.getElementById('user-detail-section').style.display = 'none';
+        }
+
+        // Save user changes
+        function saveUserChanges() {
+            alert('Perubahan user berhasil disimpan!');
+        }
+
+        // Delete user
+        function deleteUser() {
+            if (confirm('Apakah Anda yakin ingin menghapus user ini?')) {
+                alert('User berhasil dihapus!');
+                hideUserDetail();
+            }
+        }
+
+        // Generate activation link
+        function generateActivationLink() {
+            const userId = document.getElementById('userIdForLink').value;
+            if (!userId) {
+                alert('Silakan masukkan ID User terlebih dahulu');
+                return;
+            }
+            
+            // Generate kode unik (di production pakai database)
+            const kodeUnik = 'KP' + new Date().getFullYear() + 
+                             String.fromCharCode(65 + Math.floor(Math.random() * 26)) + 
+                             Math.floor(1000 + Math.random() * 9000);
+            
+            // Buat link aktivasi (sesuaikan dengan domain Anda)
+            const baseUrl = window.location.origin.replace('admin.html', '');
+            const activationLink = `${baseUrl}aktivasi.html?kode=${kodeUnik}&user=${userId}`;
+            
+            document.getElementById('activationLink').value = activationLink;
+        }
+
+        // Copy link to clipboard
+        function copyLink() {
+            const linkInput = document.getElementById('activationLink');
+            linkInput.select();
+            document.execCommand('copy');
+            alert('Link telah disalin ke clipboard!');
+        }
+
+        // Event listener for menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', toggleMenu);
+
+        // Close menu when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menu-toggle');
+            
+            if (sidebar.classList.contains('open') && 
+                !sidebar.contains(event.target) && 
+                event.target !== menuToggle && 
+                !menuToggle.contains(event.target)) {
+                toggleMenu();
+            }
+        });
+
+        // Animasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.fade-in, .slide-in');
+            elements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Simulasi data real-time
+        setInterval(() => {
+            const stats = document.querySelectorAll('.stat-card p.text-2xl');
+            stats.forEach(stat => {
+                const currentValue = parseInt(stat.textContent.replace(/,/g, ''));
+                const newValue = currentValue + Math.floor(Math.random() * 3);
+                stat.textContent = newValue.toLocaleString('id-ID');
+            });
+        }, 5000);
+    </script>
+</body>
+  </html>
