@@ -777,7 +777,7 @@
             }
         }
 
-        // Generate activation link - PERBAIKAN YANG PENTING
+        // Generate activation link - PERBAIKAN DENGAN PATH YANG BENAR
         function generateActivationLink() {
             const userId = document.getElementById('userIdForLink').value;
             if (!userId) {
@@ -798,9 +798,9 @@
                 kodeUnik += nums.charAt(Math.floor(Math.random() * nums.length));
             }
             
-            // Buat link yang benar dengan tanda / yang tepat
-            const baseUrl = 'https://bankragilgunawan.github.io/';
-            const activationLink = `${baseUrl}aktivasi.html?kode=${kodeUnik}&user=${userId}`;
+            // Buat link yang benar dengan path yang sesuai untuk repository poinkoin
+            const baseUrl = 'https://bankragilgunawan.github.io/poinkoin/';
+            const activationLink = `${baseUrl}aktivasi?kode=${kodeUnik}&user=${userId}`;
             
             document.getElementById('activationLink').value = activationLink;
             console.log('Generated link:', activationLink);
@@ -854,4 +854,4 @@
         }, 5000);
     </script>
 </body>
-</html>
+    </html>
