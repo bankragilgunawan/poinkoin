@@ -60,7 +60,7 @@
                             name="kode" 
                             placeholder="Masukkan 8 digit kode" 
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-center text-lg tracking-widest font-mono"
-                            maxlength="8"
+                            maxlength="12"
                             required
                         >
                         <p class="text-xs text-gray-500 mt-2">Kode dikirim ke nomor WhatsApp Anda</p>
@@ -104,6 +104,8 @@
         // Cek parameter kode dari URL (jika admin kirim link langsung)
         const urlParams = new URLSearchParams(window.location.search);
         const kodeFromUrl = urlParams.get('kode');
+        const userFromUrl = urlParams.get('user');
+        
         if (kodeFromUrl) {
             document.getElementById('kode').value = kodeFromUrl;
         }
@@ -113,21 +115,20 @@
             
             const kode = document.getElementById('kode').value;
             
-            if (kode.length !== 8) {
-                alert('Kode aktivasi harus 8 digit');
+            if (!kode) {
+                alert('Silakan masukkan kode aktivasi');
                 return;
             }
 
             // Simulasi verifikasi kode
             // Di production, ini akan mengirim ke server untuk verifikasi
-            const validCodes = ['KP2025A1', 'KP2025B2', 'KP2025C3', 'KP2025D4'];
-            
-            if (validCodes.includes(kode.toUpperCase())) {
+            // Untuk demo, kita terima semua kode yang dimulai dengan KP
+            if (kode.startsWith('KP')) {
                 // Kode valid, simpan session login
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userId', 'U1248');
-                localStorage.setItem('userName', 'Ahmad Santoso');
-                localStorage.setItem('userEmail', 'ahmad@email.com');
+                localStorage.setItem('userId', userFromUrl || 'U1248');
+                localStorage.setItem('userName', 'User Aktif');
+                localStorage.setItem('userEmail', 'user@email.com');
                 localStorage.setItem('userWhatsapp', '081234567890');
                 localStorage.setItem('userKoin', '1250');
                 
